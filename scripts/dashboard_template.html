@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ebola Vaccine Development Pathway Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #617087;
+      --line: #dde4ee;
+      --accent: #0f766e;
+      --accent2: #2563eb;
+      --danger: #b42318;
+      --warn: #a16207;
+      --success: #047857;
+      --purple: #7e22ce;
+      --card: #ffffff;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 10% 0%, #e8f6f3 0, transparent 28rem),
+                  radial-gradient(circle at 80% 10%, #edf2ff 0, transparent 30rem),
+                  var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.45;
+    }
+    a { color: #155e75; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      padding: 34px 42px 18px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid #b7e4de;
+      background: #ecfdf5;
+      color: #115e59;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 18px 0 8px;
+      font-size: clamp(30px, 5vw, 58px);
+      line-height: .96;
+      letter-spacing: -0.045em;
+    }
+    .subtitle {
+      max-width: 1020px;
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 10px 13px;
+      font-weight: 700;
+      color: var(--ink);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, .04);
+      cursor: pointer;
+    }
+    .btn.primary {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+    main {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 42px 50px;
+    }
+    .notice {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 14px;
+      border: 1px solid #f1dca7;
+      background: #fffbeb;
+      color: #713f12;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin: 16px 0 20px;
+      box-shadow: 0 8px 20px rgba(120, 53, 15, .05);
+    }
+    .notice .icon {
+      height: 28px; width: 28px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: #fde68a;
+      font-weight: 900;
+    }
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+    .kpis {
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      margin: 22px 0;
+    }
+    .kpi, .panel {
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .kpi {
+      padding: 18px;
+    }
+    .kpi .value {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.035em;
+    }
+    .kpi .label {
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 3px;
+    }
+    .kpi .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .panel {
+      padding: 20px;
+      margin-top: 18px;
+    }
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+    .panel p.lead {
+      margin: 0 0 16px;
+      color: var(--muted);
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(260px, 2fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      margin: 16px 0 10px;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      white-space: nowrap;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .toggle input { width: auto; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 8px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+    .chip.active {
+      border-color: var(--accent);
+      background: #ccfbf1;
+      color: #115e59;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 16px 0 12px;
+    }
+    .species-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 13px;
+      min-height: 128px;
+      position: relative;
+      overflow: hidden;
+    }
+    .species-card h3 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+    .species-card .taxon {
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--mono);
+      margin-top: 3px;
+    }
+    .species-card .stage-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .species-card .bar {
+      position: absolute;
+      left: 0; right: 0; bottom: 0; height: 5px;
+      background: linear-gradient(90deg, #e2e8f0, #e2e8f0);
+    }
+    .species-card[data-stage="0"] .bar { background: #cbd5e1; }
+    .species-card[data-stage="1"] .bar { background: #fde68a; }
+    .species-card[data-stage="2"] .bar { background: #fdba74; }
+    .species-card[data-stage="3"] .bar { background: #bfdbfe; }
+    .species-card[data-stage="4"] .bar { background: #a5b4fc; }
+    .species-card[data-stage="5"] .bar { background: #c4b5fd; }
+    .species-card[data-stage="6"] .bar { background: #86efac; }
+    .species-card[data-stage="7"] .bar { background: #34d399; }
+    .pathway-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #f8fafc;
+    }
+    .pathway-grid {
+      min-width: 1320px;
+      display: grid;
+      grid-template-columns: 190px repeat(8, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--line);
+    }
+    .cell {
+      background: #fff;
+      padding: 10px;
+      min-height: 92px;
+    }
+    .stage-header {
+      background: #0f172a;
+      color: #fff;
+      font-weight: 900;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+      min-height: 74px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: center;
+    }
+    .stage-header span {
+      display: block;
+      opacity: .72;
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 11px;
+    }
+    .species-label {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #f8fafc;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .species-label .taxon {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-weight: 500;
+    }
+    .candidate-card {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 10px;
+      background: #fff;
+      margin-bottom: 8px;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(15, 23, 42, .05);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+    .candidate-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .10);
+    }
+    .candidate-card.selected {
+      outline: 3px solid rgba(20, 184, 166, .25);
+      border-color: var(--accent);
+    }
+    .candidate-card h4 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.25;
+      letter-spacing: -.01em;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 7px;
+      background: #e2e8f0;
+      color: #334155;
+      max-width: 100%;
+    }
+    .badge.licensed, .badge.stockpile { background: #dcfce7; color: #166534; }
+    .badge.former { background: #fef3c7; color: #92400e; }
+    .badge.active { background: #dbeafe; color: #1d4ed8; }
+    .badge.early { background: #ede9fe; color: #6d28d9; }
+    .badge.gap { background: #e5e7eb; color: #4b5563; }
+    .badge.research { background: #fae8ff; color: #86198f; }
+    .candidate-meta {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 7px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(320px, .7fr);
+      gap: 18px;
+      align-items: start;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 9px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      color: #334155;
+      z-index: 1;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tbody tr {
+      cursor: pointer;
+    }
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+    .table-wrap {
+      max-height: 560px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .detail {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 16px;
+    }
+    .detail h3 {
+      color: #fff;
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+    .detail .pill {
+      display: inline-block;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      padding: 6px 9px;
+      margin: 2px 4px 8px 0;
+      font-size: 12px;
+      font-weight: 800;
+      color: #dbeafe;
+      background: rgba(255,255,255,.06);
+    }
+    .detail dl {
+      margin: 12px 0 0;
+    }
+    .detail dt {
+      color: #93c5fd;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      font-weight: 900;
+      margin-top: 12px;
+    }
+    .detail dd {
+      margin: 4px 0 0;
+      color: #e2e8f0;
+    }
+    .detail a {
+      color: #99f6e4;
+      display: block;
+      overflow-wrap: anywhere;
+      margin: 4px 0;
+    }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .method-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .method-card h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+    .method-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .footer {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 22px 0 0;
+    }
+    .empty {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 14px 2px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+    @media (max-width: 1100px) {
+      header, main { padding-left: 22px; padding-right: 22px; }
+      .kpis { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+      .summary-grid { grid-template-columns: repeat(2, minmax(170px, 1fr)); }
+      .controls { grid-template-columns: 1fr 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .detail { position: static; }
+      .method-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      header, main { padding-left: 14px; padding-right: 14px; }
+      .kpis { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: 1fr; }
+      .header-actions { flex-direction: column; }
+      .btn { text-align: center; }
+    }
+    @media print {
+      body { background: #fff; }
+      .controls, .chips, .header-actions { display: none; }
+      .panel, .kpi, .detail { box-shadow: none; }
+      .pathway-wrap { overflow: visible; }
+      .pathway-grid { min-width: 0; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Clinical pathway map · not a case map</div>
+    <h1>Ebola vaccine development pathway dashboard</h1>
+    <p class="subtitle">
+      A strain-by-strain map of vaccine development maturity for Zaire, Sudan, Taï Forest, Bundibugyo, Reston, and Bombali orthoebolaviruses. Cards are positioned by the most relevant development stage, from “no dedicated clinical pathway” through stockpile and deployment.
+    </p>
+    <div class="header-actions">
+      <a class="btn primary" href="#pathway">View pathway map</a>
+      <a class="btn" href="ebola_vaccine_development_pipeline_data.csv" download>Download generated CSV</a>
+      <a class="btn" href="automation_summary.md" download>Download automation report</a>
+      <button class="btn" onclick="window.print()">Print / save PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="notice">
+      <div class="icon">!</div>
+      <div>
+        <strong>Interpretation note:</strong> this dashboard maps vaccine-development maturity, not outbreak locations or case burden. Rows are generated automatically from public clinical-trial, regulator, WHO/CEPI, sponsor, and discovery sources using deterministic rules. Site rebuilt: <strong>@@BUILD_DATE@@</strong>.
+      </div>
+    </section>
+
+    <section class="grid kpis" id="kpis"></section>
+
+    <section class="panel">
+      <h2>Filters</h2>
+      <p class="lead">Select a strain to create a separate pathway map, or use “All strains” to compare the whole development landscape.</p>
+      <div class="chips" id="speciesChips"></div>
+      <div class="controls">
+        <input id="searchBox" type="search" placeholder="Search candidate, platform, sponsor, status, or evidence…" />
+        <select id="stageFilter"></select>
+        <select id="statusFilter"></select>
+        <label class="toggle"><input type="checkbox" id="gapToggle" checked /> show gap lanes</label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Species snapshots</h2>
+      <p class="lead">Highest mapped stage by strain, with candidate records counted separately from explicit gap rows.</p>
+      <div class="summary-grid" id="speciesSummary"></div>
+    </section>
+
+    <section class="panel" id="pathway">
+      <h2>Development pathway map</h2>
+      <p class="lead">Each card sits in the column matching its current pathway stage. Click a card to view evidence, next milestone, and source links.</p>
+      <div class="pathway-wrap">
+        <div class="pathway-grid" id="pathwayGrid"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Candidate detail table</h2>
+      <p class="lead">The table is filter-linked to the pathway map. Select a row to open the source-backed detail panel.</p>
+      <div class="two-col">
+        <div class="table-wrap">
+          <table id="candidateTable">
+            <thead>
+              <tr>
+                <th>Candidate</th>
+                <th>Strain</th>
+                <th>Stage</th>
+                <th>Status</th>
+                <th>Platform / sponsor</th>
+                <th>Next milestone</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <aside class="detail" id="detailPanel"></aside>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Curation methodology</h2>
+      <div class="method-grid">
+        <div class="method-card">
+          <h3>Stage assignment</h3>
+          <p>Rows are mapped to the highest documented target-specific milestone, not to platform maturity. Example: Ervebo is stockpiled for Zaire, while the same rVSV platform applied to Bundibugyo remains clinical-enabling.</p>
+        </div>
+        <div class="method-card">
+          <h3>Species-specific claims</h3>
+          <p>Zaire, Sudan, Taï Forest, and Bundibugyo are treated as human-disease species. Reston and Bombali are shown as no-human-disease/gap lanes unless new evidence changes prioritization.</p>
+        </div>
+        <div class="method-card">
+          <h3>Current-status caveat</h3>
+          <p>Regulatory and trial status can change quickly during outbreaks. The generated CSV includes source URLs, automation method, last-checked timestamp, and supporting-record count for row-wise audit before operational, procurement, or investment decisions.</p>
+        </div>
+      </div>
+      <p class="footer">
+        Automated sources include ClinicalTrials.gov, FDA/CDC/openFDA, EMA product pages, WHO/CEPI/sponsor watch pages, EBOVAC, and GDELT discovery signals. This dashboard is an automated landscape view, not a substitute for regulatory advice or a complete clinical-trial registry.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const DATA = @@DATA_JSON@@;
+    const STAGES = [
+  {
+    "order": 0,
+    "label": "No dedicated clinical pathway",
+    "short": "Gap"
+  },
+  {
+    "order": 1,
+    "label": "Discovery / translational research",
+    "short": "Research"
+  },
+  {
+    "order": 2,
+    "label": "Preclinical + CMC / clinical-enabling",
+    "short": "Preclinical + CMC"
+  },
+  {
+    "order": 3,
+    "label": "Phase 1 safety / immunogenicity",
+    "short": "Phase 1"
+  },
+  {
+    "order": 4,
+    "label": "Phase 2 dose / safety / immunogenicity",
+    "short": "Phase 2"
+  },
+  {
+    "order": 5,
+    "label": "Phase 3 / outbreak efficacy trial",
+    "short": "Phase 3 / efficacy"
+  },
+  {
+    "order": 6,
+    "label": "Regulatory authorization / WHO PQ",
+    "short": "Authorization / PQ"
+  },
+  {
+    "order": 7,
+    "label": "Stockpile / deployed / post-licensure",
+    "short": "Stockpile / deployed"
+  }
+];
+    const SPECIES_ORDER = ["Zaire", "Sudan", "Taï Forest", "Bundibugyo", "Reston", "Bombali"];
+
+    const state = {
+      species: "All strains",
+      stage: "All stages",
+      status: "All statuses",
+      search: "",
+      showGaps: true,
+      selectedId: null
+    };
+
+    const taxonBySpecies = Object.fromEntries(SPECIES_ORDER.map(sp => {
+      const row = DATA.find(d => d.target_species === sp);
+      return [sp, row ? row.species_taxon : ""];
+    }));
+
+    function badgeClass(row) {
+      const txt = (row.status_type + " " + row.active_status + " " + row.stage).toLowerCase();
+      if (txt.includes("stockpile") || txt.includes("current outbreak-response")) return "stockpile";
+      if (txt.includes("former")) return "former";
+      if (txt.includes("gap")) return "gap";
+      if (txt.includes("research-only")) return "research";
+      if (txt.includes("active")) return "active";
+      if (txt.includes("early") || txt.includes("phase 1")) return "early";
+      return "active";
+    }
+
+    function escapeText(s) {
+      return String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+    }
+
+    function filteredData() {
+      const q = state.search.trim().toLowerCase();
+      return DATA.filter(row => {
+        if (!state.showGaps && row.status_type === "Gap") return false;
+        if (state.species !== "All strains" && row.target_species !== state.species) return false;
+        if (state.stage !== "All stages" && String(row.stage_order) !== state.stage) return false;
+        if (state.status !== "All statuses" && row.status_type !== state.status) return false;
+        if (q) {
+          const haystack = Object.values(row).join(" ").toLowerCase();
+          if (!haystack.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function candidateRows(rows = DATA) {
+      return rows.filter(d => d.status_type !== "Gap" && !d.status_type.toLowerCase().includes("research-only"));
+    }
+
+    function renderKpis() {
+      const bdbvActive = DATA.filter(d => d.target_species === "Bundibugyo" && d.status_type.includes("Active")).length;
+      const phase2Plus = DATA.filter(d => d.stage_order >= 4 && d.status_type !== "Gap").length;
+      const stockpile = DATA.filter(d => d.stage_order === 7).length;
+      const nonZaireLicensed = DATA.filter(d => d.target_species !== "Zaire" && d.stage_order >= 6 && !d.status_type.includes("Antigen")).length;
+      const kpis = [
+        [SPECIES_ORDER.length, "Strains mapped", "Separate pathway views for all requested viruses."],
+        [stockpile, "Current stockpile product", "Ervebo is the mapped stockpile product for Zaire only."],
+        [phase2Plus, "Records at Phase 2+", "Includes Zaire authorizations and Sudan late-stage pathways."],
+        [nonZaireLicensed, "Licensed non-Zaire vaccines", "Sudan, Bundibugyo, Taï Forest, Reston, and Bombali remain without licensed human vaccines."]
+      ];
+      document.getElementById("kpis").innerHTML = kpis.map(([value, label, hint]) => `
+        <div class="kpi"><div class="value">${value}</div><div class="label">${escapeText(label)}</div><div class="hint">${escapeText(hint)}</div></div>
+      `).join("");
+    }
+
+    function renderChips() {
+      const labels = ["All strains", ...SPECIES_ORDER];
+      document.getElementById("speciesChips").innerHTML = labels.map(label => `
+        <button class="chip ${label === state.species ? "active" : ""}" data-species="${escapeText(label)}">${escapeText(label)}</button>
+      `).join("");
+      document.querySelectorAll(".chip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.species = btn.dataset.species;
+          state.selectedId = null;
+          renderAll();
+        });
+      });
+    }
+
+    function renderFilters() {
+      const stageSelect = document.getElementById("stageFilter");
+      stageSelect.innerHTML = `<option value="All stages">All stages</option>` + STAGES.map(s => `<option value="${s.order}">${s.order} · ${escapeText(s.short)}</option>`).join("");
+      stageSelect.value = state.stage;
+      const statuses = [...new Set(DATA.map(d => d.status_type))].sort();
+      const statusSelect = document.getElementById("statusFilter");
+      statusSelect.innerHTML = `<option value="All statuses">All statuses</option>` + statuses.map(s => `<option value="${escapeText(s)}">${escapeText(s)}</option>`).join("");
+      statusSelect.value = state.status;
+    }
+
+    function renderSpeciesSummary() {
+      const html = SPECIES_ORDER.map(sp => {
+        const rows = DATA.filter(d => d.target_species === sp);
+        const realRows = candidateRows(rows);
+        const highest = realRows.length ? Math.max(...realRows.map(d => d.stage_order)) : 0;
+        const stage = STAGES.find(s => s.order === highest);
+        const stageLabel = stage ? stage.short : "Gap";
+        const n = realRows.length;
+        const next = rows.find(r => r.stage_order === highest)?.next_milestone || rows[0]?.next_milestone || "";
+        return `
+          <div class="species-card" data-stage="${highest}">
+            <h3>${escapeText(sp)}</h3>
+            <div class="taxon">${escapeText(taxonBySpecies[sp])}</div>
+            <div class="stage-note"><strong>Highest mapped stage:</strong> ${escapeText(stageLabel)}<br><strong>Candidate records:</strong> ${n}</div>
+            <div class="stage-note">${escapeText(next).slice(0, 145)}${next.length > 145 ? "…" : ""}</div>
+            <div class="bar"></div>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("speciesSummary").innerHTML = html;
+    }
+
+    function renderPathway() {
+      const rows = filteredData();
+      const speciesToShow = state.species === "All strains" ? SPECIES_ORDER : [state.species];
+      let html = `<div class="cell stage-header">Strain<span>virus species</span></div>`;
+      html += STAGES.map(s => `<div class="cell stage-header">${escapeText(s.short)}<span>${escapeText(s.label)}</span></div>`).join("");
+      for (const sp of speciesToShow) {
+        html += `<div class="cell species-label">${escapeText(sp)}<span class="taxon">${escapeText(taxonBySpecies[sp])}</span></div>`;
+        for (const st of STAGES) {
+          const cards = rows.filter(d => d.target_species === sp && d.stage_order === st.order);
+          html += `<div class="cell">`;
+          if (cards.length) {
+            html += cards.map(row => `
+              <div class="candidate-card ${row.id === state.selectedId ? "selected" : ""}" data-id="${escapeText(row.id)}">
+                <h4>${escapeText(row.candidate)}</h4>
+                <span class="badge ${badgeClass(row)}">${escapeText(row.status_type)}</span>
+                <div class="candidate-meta">${escapeText(row.platform)} · ${escapeText(row.developer_sponsor)}</div>
+              </div>
+            `).join("");
+          } else {
+            html += `<div class="empty">—</div>`;
+          }
+          html += `</div>`;
+        }
+      }
+      document.getElementById("pathwayGrid").innerHTML = html;
+      document.querySelectorAll(".candidate-card").forEach(card => {
+        card.addEventListener("click", () => {
+          state.selectedId = card.dataset.id;
+          renderPathway();
+          renderTable();
+          renderDetail();
+        });
+      });
+    }
+
+    function renderTable() {
+      const rows = filteredData();
+      const tbody = document.querySelector("#candidateTable tbody");
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="6">No rows match the current filters.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(row => `
+        <tr data-id="${escapeText(row.id)}" style="${row.id === state.selectedId ? "background:#ecfeff" : ""}">
+          <td><strong>${escapeText(row.candidate)}</strong><br><span style="color:#64748b">${escapeText(row.species_taxon)}</span></td>
+          <td>${escapeText(row.target_species)}</td>
+          <td>${row.stage_order} · ${escapeText(row.stage)}</td>
+          <td><span class="badge ${badgeClass(row)}">${escapeText(row.status_type)}</span><br><span style="color:#64748b">${escapeText(row.active_status)}</span></td>
+          <td>${escapeText(row.platform)}<br><span style="color:#64748b">${escapeText(row.developer_sponsor)}</span></td>
+          <td>${escapeText(row.next_milestone)}</td>
+        </tr>
+      `).join("");
+      tbody.querySelectorAll("tr").forEach(tr => {
+        tr.addEventListener("click", () => {
+          state.selectedId = tr.dataset.id;
+          renderPathway();
+          renderTable();
+          renderDetail();
+        });
+      });
+    }
+
+    function renderDetail() {
+      const rows = filteredData();
+      let row = DATA.find(d => d.id === state.selectedId);
+      if (!row || !rows.some(r => r.id === row.id)) row = rows[0] || DATA[0];
+      state.selectedId = row ? row.id : null;
+      const panel = document.getElementById("detailPanel");
+      if (!row) {
+        panel.innerHTML = "<h3>No candidate selected</h3>";
+        return;
+      }
+      const sources = [1,2,3].map(i => {
+        const name = row[`source_${i}`];
+        const url = row[`source_url_${i}`];
+        if (!name || !url) return "";
+        return `<a href="${escapeText(url)}" target="_blank" rel="noopener">${escapeText(name)}</a>`;
+      }).filter(Boolean).join("");
+      panel.innerHTML = `
+        <h3>${escapeText(row.candidate)}</h3>
+        <span class="pill">${escapeText(row.target_species)}</span>
+        <span class="pill">${row.stage_order} · ${escapeText(row.stage)}</span>
+        <span class="pill">${escapeText(row.status_type)}</span>
+        <dl>
+          <dt>Platform</dt><dd>${escapeText(row.platform)}</dd>
+          <dt>Developer / sponsor</dt><dd>${escapeText(row.developer_sponsor)}</dd>
+          <dt>Regulatory status</dt><dd>${escapeText(row.regulatory_status)}</dd>
+          <dt>Evidence summary</dt><dd>${escapeText(row.evidence_summary)}</dd>
+          <dt>Next milestone</dt><dd>${escapeText(row.next_milestone)}</dd>
+          <dt>Development geography</dt><dd>${escapeText(row.development_geography)}</dd>
+          <dt>Notes</dt><dd>${escapeText(row.notes)}</dd>
+          <dt>Sources</dt><dd>${sources || "No source URL listed."}</dd>
+        </dl>
+      `;
+    }
+
+    function bindControls() {
+      document.getElementById("searchBox").addEventListener("input", e => {
+        state.search = e.target.value;
+        state.selectedId = null;
+        renderPathway(); renderTable(); renderDetail();
+      });
+      document.getElementById("stageFilter").addEventListener("change", e => {
+        state.stage = e.target.value;
+        state.selectedId = null;
+        renderPathway(); renderTable(); renderDetail();
+      });
+      document.getElementById("statusFilter").addEventListener("change", e => {
+        state.status = e.target.value;
+        state.selectedId = null;
+        renderPathway(); renderTable(); renderDetail();
+      });
+      document.getElementById("gapToggle").addEventListener("change", e => {
+        state.showGaps = e.target.checked;
+        state.selectedId = null;
+        renderPathway(); renderTable(); renderDetail();
+      });
+    }
+
+    function renderAll() {
+      renderKpis();
+      renderChips();
+      renderFilters();
+      document.getElementById("searchBox").value = state.search;
+      document.getElementById("gapToggle").checked = state.showGaps;
+      renderSpeciesSummary();
+      renderPathway();
+      renderTable();
+      renderDetail();
+    }
+
+    bindControls();
+    renderAll();
+  </script>
+</body>
+</html>
